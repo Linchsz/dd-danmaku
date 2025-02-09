@@ -15,7 +15,10 @@
 
 (async function () {
     'use strict';
-    if (document.querySelector('meta[name="application-name"]').content == 'Emby') {
+    const appVersion = document.querySelector('html').getAttribute('data-appversion').substring(0, 3);
+    const isVersionOld = appVersion < 4.8;
+    const applicationName = document.querySelector('meta[name="application-name"]').content;
+    if (applicationName == 'Mac Mini' || applicationName == 'DS224plus' || applicationName.includes('Media Server')) {
         // ------ configs start------
         const check_interval = 200;
         const chConverTtitle = ['当前状态: 未启用', '当前状态: 转换为简体', '当前状态: 转换为繁体'];
@@ -30,7 +33,10 @@
             is: 'paper-icon-button-light',
         };
         const uiAnchorStr = '\uE034';
-        const mediaContainerQueryStr = "div[data-type='video-osd']";
+        let mediaContainerQueryStr = ".htmlVideoPlayerContainer";
+        if (isVersionOld) {
+            mediaContainerQueryStr = "div[data-type='video-osd']";
+        }
         const mediaQueryStr = 'video';
         const displayButtonOpts = {
             title: '弹幕开关',
@@ -97,7 +103,6 @@
                 sendNotification('当前弹幕匹配', msg);
             },
         };
-
         const filterButtonOpts = {
             title: '过滤等级(下次加载生效)',
             id: 'filteringDanmaku',
@@ -116,7 +121,6 @@
         // prettier-ignore
         !function(t,e){"object"==typeof exports&&"undefined"!=typeof module?module.exports=e():"function"==typeof define&&define.amd?define(e):(t="undefined"!=typeof globalThis?globalThis:t||self).Danmaku=e()}(this,(function(){"use strict";var t=function(){for(var t=["oTransform","msTransform","mozTransform","webkitTransform","transform"],e=document.createElement("div").style,i=0;i<t.length;i++)if(t[i]in e)return t[i];return"transform"}();function e(t){var e=document.createElement("div");if(e.style.cssText="position:absolute;","function"==typeof t.render){var i=t.render();if(i instanceof HTMLElement)return e.appendChild(i),e}if(e.textContent=t.text,t.style)for(var n in t.style)e.style[n]=t.style[n];return e}var i={name:"dom",init:function(){var t=document.createElement("div");return t.style.cssText="overflow:hidden;white-space:nowrap;transform:translateZ(0);",t},clear:function(t){for(var e=t.lastChild;e;)t.removeChild(e),e=t.lastChild},resize:function(t,e,i){t.style.width=e+"px",t.style.height=i+"px"},framing:function(){},setup:function(t,i){var n=document.createDocumentFragment(),s=0,r=null;for(s=0;s<i.length;s++)(r=i[s]).node=r.node||e(r),n.appendChild(r.node);for(i.length&&t.appendChild(n),s=0;s<i.length;s++)(r=i[s]).width=r.width||r.node.offsetWidth,r.height=r.height||r.node.offsetHeight},render:function(e,i){i.node.style[t]="translate("+i.x+"px,"+i.y+"px)"},remove:function(t,e){t.removeChild(e.node),this.media||(e.node=null)}};const n=window.devicePixelRatio||1;var s=Object.create(null);function r(t,e){if("function"==typeof t.render){var i=t.render();if(i instanceof HTMLCanvasElement)return t.width=i.width,t.height=i.height,i}var r=document.createElement("canvas"),h=r.getContext("2d"),o=t.style||{};o.font=o.font||"10px sans-serif",o.textBaseline=o.textBaseline||"bottom";var a=1*o.lineWidth;for(var d in a=a>0&&a!==1/0?Math.ceil(a):1*!!o.strokeStyle,h.font=o.font,t.width=t.width||Math.max(1,Math.ceil(h.measureText(t.text).width)+2*a),t.height=t.height||Math.ceil(function(t,e){if(s[t])return s[t];var i=12,n=t.match(/(\d+(?:\.\d+)?)(px|%|em|rem)(?:\s*\/\s*(\d+(?:\.\d+)?)(px|%|em|rem)?)?/);if(n){var r=1*n[1]||10,h=n[2],o=1*n[3]||1.2,a=n[4];"%"===h&&(r*=e.container/100),"em"===h&&(r*=e.container),"rem"===h&&(r*=e.root),"px"===a&&(i=o),"%"===a&&(i=r*o/100),"em"===a&&(i=r*o),"rem"===a&&(i=e.root*o),void 0===a&&(i=r*o)}return s[t]=i,i}(o.font,e))+2*a,r.width=t.width*n,r.height=t.height*n,h.scale(n,n),o)h[d]=o[d];var u=0;switch(o.textBaseline){case"top":case"hanging":u=a;break;case"middle":u=t.height>>1;break;default:u=t.height-a}return o.strokeStyle&&h.strokeText(t.text,a,u),h.fillText(t.text,a,u),r}function h(t){return 1*window.getComputedStyle(t,null).getPropertyValue("font-size").match(/(.+)px/)[1]}var o={name:"canvas",init:function(t){var e=document.createElement("canvas");return e.context=e.getContext("2d"),e._fontSize={root:h(document.getElementsByTagName("html")[0]),container:h(t)},e},clear:function(t,e){t.context.clearRect(0,0,t.width,t.height);for(var i=0;i<e.length;i++)e[i].canvas=null},resize:function(t,e,i){t.width=e*n,t.height=i*n,t.style.width=e+"px",t.style.height=i+"px"},framing:function(t){t.context.clearRect(0,0,t.width,t.height)},setup:function(t,e){for(var i=0;i<e.length;i++){var n=e[i];n.canvas=r(n,t._fontSize)}},render:function(t,e){t.context.drawImage(e.canvas,e.x*n,e.y*n)},remove:function(t,e){e.canvas=null}};function a(t){var e=this,i=this.media?this.media.currentTime:Date.now()/1e3,n=this.media?this.media.playbackRate:1;function s(t,s){if("top"===s.mode||"bottom"===s.mode)return i-t.time<e._.duration;var r=(e._.width+t.width)*(i-t.time)*n/e._.duration;if(t.width>r)return!0;var h=e._.duration+t.time-i,o=e._.width+s.width,a=e.media?s.time:s._utc,d=o*(i-a)*n/e._.duration,u=e._.width-d;return h>e._.duration*u/(e._.width+s.width)}for(var r=this._.space[t.mode],h=0,o=0,a=1;a<r.length;a++){var d=r[a],u=t.height;if("top"!==t.mode&&"bottom"!==t.mode||(u+=d.height),d.range-d.height-r[h].range>=u){o=a;break}s(d,t)&&(h=a)}var m=r[h].range,c={range:m+t.height,time:this.media?t.time:t._utc,width:t.width,height:t.height};return r.splice(h+1,o-h-1,c),"bottom"===t.mode?this._.height-t.height-m%this._.height:m%(this._.height-t.height)}var d=window.requestAnimationFrame||window.mozRequestAnimationFrame||window.webkitRequestAnimationFrame||function(t){return setTimeout(t,50/3)},u=window.cancelAnimationFrame||window.mozCancelAnimationFrame||window.webkitCancelAnimationFrame||clearTimeout;function m(t,e,i){for(var n=0,s=0,r=t.length;s<r-1;)i>=t[n=s+r>>1][e]?s=n:r=n;return t[s]&&i<t[s][e]?s:r}function c(t){return/^(ltr|top|bottom)$/i.test(t)?t.toLowerCase():"rtl"}function l(){var t=9007199254740991;return[{range:0,time:-t,width:t,height:0},{range:t,time:t,width:0,height:0}]}function f(t){t.ltr=l(),t.rtl=l(),t.top=l(),t.bottom=l()}function p(){if(!this._.visible||!this._.paused)return this;if(this._.paused=!1,this.media)for(var t=0;t<this._.runningList.length;t++){var e=this._.runningList[t];e._utc=Date.now()/1e3-(this.media.currentTime-e.time)}var i=this,n=function(t,e,i,n){return function(){t(this._.stage);var s=Date.now()/1e3,r=this.media?this.media.currentTime:s,h=this.media?this.media.playbackRate:1,o=null,d=0,u=0;for(u=this._.runningList.length-1;u>=0;u--)o=this._.runningList[u],r-(d=this.media?o.time:o._utc)>this._.duration&&(n(this._.stage,o),this._.runningList.splice(u,1));for(var m=[];this._.position<this.comments.length&&(o=this.comments[this._.position],!((d=this.media?o.time:o._utc)>=r));)r-d>this._.duration||(this.media&&(o._utc=s-(this.media.currentTime-o.time)),m.push(o)),++this._.position;for(e(this._.stage,m),u=0;u<m.length;u++)(o=m[u]).y=a.call(this,o),this._.runningList.push(o);for(u=0;u<this._.runningList.length;u++){o=this._.runningList[u];var c=(this._.width+o.width)*(s-o._utc)*h/this._.duration;"ltr"===o.mode&&(o.x=c-o.width+.5|0),"rtl"===o.mode&&(o.x=this._.width-c+.5|0),"top"!==o.mode&&"bottom"!==o.mode||(o.x=this._.width-o.width>>1),i(this._.stage,o)}}}(this._.engine.framing.bind(this),this._.engine.setup.bind(this),this._.engine.render.bind(this),this._.engine.remove.bind(this));return this._.requestID=d((function t(){n.call(i),i._.requestID=d(t)})),this}function g(){return!this._.visible||this._.paused||(this._.paused=!0,u(this._.requestID),this._.requestID=0),this}function _(){if(!this.media)return this;this.clear(),f(this._.space);var t=m(this.comments,"time",this.media.currentTime);return this._.position=Math.max(0,t-1),this}function v(t){t.play=p.bind(this),t.pause=g.bind(this),t.seeking=_.bind(this),this.media.addEventListener("play",t.play),this.media.addEventListener("pause",t.pause),this.media.addEventListener("playing",t.play),this.media.addEventListener("waiting",t.pause),this.media.addEventListener("seeking",t.seeking)}function w(t){this.media.removeEventListener("play",t.play),this.media.removeEventListener("pause",t.pause),this.media.removeEventListener("playing",t.play),this.media.removeEventListener("waiting",t.pause),this.media.removeEventListener("seeking",t.seeking),t.play=null,t.pause=null,t.seeking=null}function y(t){this._={},this.container=t.container||document.createElement("div"),this.media=t.media,this._.visible=!0,this.engine=(t.engine||"DOM").toLowerCase(),this._.engine="canvas"===this.engine?o:i,this._.requestID=0,this._.speed=Math.max(0,t.speed)||144,this._.duration=4,this.comments=t.comments||[],this.comments.sort((function(t,e){return t.time-e.time}));for(var e=0;e<this.comments.length;e++)this.comments[e].mode=c(this.comments[e].mode);return this._.runningList=[],this._.position=0,this._.paused=!0,this.media&&(this._.listener={},v.call(this,this._.listener)),this._.stage=this._.engine.init(this.container),this._.stage.style.cssText+="position:relative;pointer-events:none;",this.resize(),this.container.appendChild(this._.stage),this._.space={},f(this._.space),this.media&&this.media.paused||(_.call(this),p.call(this)),this}function x(){if(!this.container)return this;for(var t in g.call(this),this.clear(),this.container.removeChild(this._.stage),this.media&&w.call(this,this._.listener),this)Object.prototype.hasOwnProperty.call(this,t)&&(this[t]=null);return this}var b=["mode","time","text","render","style"];function L(t){if(!t||"[object Object]"!==Object.prototype.toString.call(t))return this;for(var e={},i=0;i<b.length;i++)void 0!==t[b[i]]&&(e[b[i]]=t[b[i]]);if(e.text=(e.text||"").toString(),e.mode=c(e.mode),e._utc=Date.now()/1e3,this.media){var n=0;void 0===e.time?(e.time=this.media.currentTime,n=this._.position):(n=m(this.comments,"time",e.time))<this._.position&&(this._.position+=1),this.comments.splice(n,0,e)}else this.comments.push(e);return this}function T(){return this._.visible?this:(this._.visible=!0,this.media&&this.media.paused||(_.call(this),p.call(this)),this)}function E(){return this._.visible?(g.call(this),this.clear(),this._.visible=!1,this):this}function k(){return this._.engine.clear(this._.stage,this._.runningList),this._.runningList=[],this}function C(){return this._.width=this.container.offsetWidth,this._.height=this.container.offsetHeight,this._.engine.resize(this._.stage,this._.width,this._.height),this._.duration=this._.width/this._.speed,this}var D={get:function(){return this._.speed},set:function(t){return"number"!=typeof t||isNaN(t)||!isFinite(t)||t<=0?this._.speed:(this._.speed=t,this._.width&&(this._.duration=this._.width/t),t)}};function z(t){t&&y.call(this,t)}return z.prototype.destroy=function(){return x.call(this)},z.prototype.emit=function(t){return L.call(this,t)},z.prototype.show=function(){return T.call(this)},z.prototype.hide=function(){return E.call(this)},z.prototype.clear=function(){return k.call(this)},z.prototype.resize=function(){return C.call(this)},Object.defineProperty(z.prototype,"speed",D),z}));
         /* eslint-enable */
-
         class EDE {
             constructor() {
                 this.chConvert = 1;
@@ -134,7 +138,6 @@
                 this.loading = false;
             }
         }
-
         function createButton(opt) {
             let button = document.createElement('button', buttonOptions);
             button.setAttribute('title', opt.title);
@@ -146,7 +149,6 @@
             button.onclick = opt.onclick;
             return button;
         }
-
         function initListener() {
             let container = document.querySelector(mediaQueryStr);
             // 页面未加载
@@ -163,7 +165,6 @@
                 console.log('Listener初始化完成');
             }
         }
-
         function getElementsByInnerText(tagType, innerStr, excludeChildNode = true) {
             var temp = [];
             var elements = document.getElementsByTagName(tagType);
@@ -191,7 +192,6 @@
             });
             return res;
         }
-
         function initUI() {
             // 页面未加载
             let uiAnchor = getElementsByInnerText('i', uiAnchorStr);
@@ -226,7 +226,6 @@
             menubar.appendChild(createButton(infoButtonOpts));
             console.log('UI初始化完成');
         }
-
         function sendNotification(title, msg) {
             const Notification = window.Notification || window.webkitNotifications;
             console.log(msg);
@@ -244,7 +243,6 @@
                 });
             }
         }
-
         function getEmbyItemInfo() {
             return window.require(['pluginManager']).then((items) => {
                 if (items) {
@@ -263,7 +261,6 @@
                 return null;
             });
         }
-
         async function getEpisodeInfo(is_auto = true) {
             let item = await getEmbyItemInfo();
             if (!item) {
@@ -304,7 +301,7 @@
                 animeName = prompt('确认动画名:', animeName);
             }
 
-            let searchUrl = 'https://api.dandanplay.net/api/v2/search/episodes?anime=' + animeName + '&withRelated=true';
+            let searchUrl = 'https://api.9-ch.com/cors/https://api.dandanplay.net/api/v2/search/episodes?anime=' + animeName + '&withRelated=true';
             if (is_auto) {
                 searchUrl += '&episode=' + episode;
             }
@@ -353,7 +350,6 @@
             window.localStorage.setItem(_episode_key, JSON.stringify(episodeInfo));
             return episodeInfo;
         }
-
         function getComments(episodeId) {
             let url = 'https://api.9-ch.com/cors/https://api.dandanplay.net/api/v2/comment/' + episodeId + '?withRelated=true&chConvert=' + window.ede.chConvert;
             return fetch(url, {
@@ -374,7 +370,6 @@
                     return null;
                 });
         }
-
         async function createDanmaku(comments) {
             if (!comments) {
                 return;
@@ -386,13 +381,15 @@
             }
             let _comments = danmakuFilter(danmakuParser(comments));
             console.log('弹幕加载成功: ' + _comments.length);
-
             while (!document.querySelector(mediaContainerQueryStr)) {
                 await new Promise((resolve) => setTimeout(resolve, 200));
             }
 
             let _container = document.querySelector(mediaContainerQueryStr);
             let _media = document.querySelector(mediaQueryStr);
+            if (!isVersionOld) {
+                _media.style.position = 'absolute';
+            }
             window.ede.danmaku = new Danmaku({
                 container: _container,
                 media: _media,
@@ -411,7 +408,6 @@
             });
             window.ede.ob.observe(_container);
         }
-
         function reloadDanmaku(type = 'check') {
             if (window.ede.loading) {
                 console.log('正在重新加载');
@@ -456,7 +452,6 @@
                     }
                 });
         }
-
         function danmakuFilter(comments) {
             let level = parseInt(window.localStorage.getItem('danmakuFilterLevel') ? window.localStorage.getItem('danmakuFilterLevel') : 0);
             if (level == 0) {
@@ -488,7 +483,6 @@
             }
             return arr_comments.flat();
         }
-
         function danmakuParser($obj) {
             //const $xml = new DOMParser().parseFromString(string, 'text/xml')
             return $obj
@@ -510,7 +504,6 @@
                             color: `#${color}`,
                             textShadow:
                                 color === '00000' ? '-1px -1px #fff, -1px 1px #fff, 1px -1px #fff, 1px 1px #fff' : '-1px -1px #000, -1px 1px #000, 1px -1px #000, 1px 1px #000',
-
                             font: `${fontSize}px sans-serif`,
                             fillStyle: `#${color}`,
                             strokeStyle: color === '000000' ? '#fff' : '#000',
@@ -520,7 +513,6 @@
                 })
                 .filter((x) => x);
         }
-
         function list2string($obj2) {
             const $animes = $obj2.animes;
             let anime_lists = $animes.map(($single_anime) => {
@@ -532,7 +524,6 @@
             }
             return anime_lists_str;
         }
-
         function ep2string($obj3) {
             const $animes = $obj3;
             let anime_lists = $animes.map(($single_ep) => {
@@ -544,7 +535,6 @@
             }
             return ep_lists_str;
         }
-
         while (!window.require) {
             await new Promise((resolve) => setTimeout(resolve, 200));
         }
